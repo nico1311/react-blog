@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
-import { useLocation } from 'wouter';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useRoute } from 'wouter';
 import { Heading } from 'react-bulma-components';
 import Swal from 'sweetalert2';
 
 import EditPostForm from '../components/EditPostForm';
 import ApiClient from '../api/ApiClient';
 
-function NewPost () {
+function EditPost () {
+  const [match, params] = useRoute('/posts/:id/edit');
   const [location, setLocation] = useLocation();
 
-  const [post, setPost] = useState({
-    title: '',
-    body: ''
-  });
+  const [post, setPost] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setInitialLoading(true);
+    ApiClient.getPost(params.id)
+    .then((post) => setPost(post))
+    .catch((err) => setError(err.message))
+    .finally(() => setInitialLoading(false));
+  }, []);
 
   const handleSubmission = (values) => {
     console.log('submit', values);
     setFormLoading(true);
-    ApiClient.createPost(values).then((newPost) => {
+    ApiClient.editPost(post.id, values).then((newPost) => {
+      setPost(newPost);
       Swal.fire({
-        title: 'Post created',
+        title: 'Post edited',
         icon: 'success',
         confirmButtonColor: '#f14668',
         timer: 2000
       }).then(() => {
-        setLocation(`/posts`);
+        setLocation(`/posts/${post.id}`);
       });
     }).catch((err) => {
       Swal.fire({
@@ -41,9 +50,17 @@ function NewPost () {
     setLocation('/posts');
   }
 
-  return (
+  if (initialLoading) return (
+    <div>Loading...</div>
+  );
+
+  if (error) return (
+    <div>Error: {error}</div>
+  );
+
+  if (post) return (
     <div className="postEdit">
-      <Heading size="3">New post</Heading>
+      <Heading size="3">Edit post</Heading>
       <EditPostForm
         title={post.title}
         content={post.body}
@@ -52,6 +69,8 @@ function NewPost () {
         onCancel={handleCancel} />
     </div>
   );
+
+  return null;
 }
 
-export default NewPost;
+export default EditPost;

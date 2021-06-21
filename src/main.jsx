@@ -1,7 +1,8 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 import 'bulma/css/bulma.min.css';
+import 'sweetalert2/dist/sweetalert2.min.css';
 import App from './App';
 
 ReactDOM.render(

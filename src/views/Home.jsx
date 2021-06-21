@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { Box, Button, Heading } from 'react-bulma-components';
+import Swal from 'sweetalert2';
 
 import ApiClient from '../api/ApiClient';
 
@@ -14,6 +15,43 @@ function Home () {
       console.error(err);
     });
   }, []);
+
+  const toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  });
+
+  const handleDeletion = (id) => {
+    Swal.fire({
+      title: 'Delete this post?',
+      showCancelButton: true,
+      confirmButtonColor: '#f14668',
+      confirmButtonText: 'Delete',
+      cancelButtonColor: '#3e8ed0',
+      cancelButtonText: `Cancel`,
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return ApiClient.deletePost(id).catch((err) => {
+          Swal.showValidationMessage(`Something went wrong: ${err.message}`)
+        });
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setPosts(posts.filter((post) => post.id !== id));
+        toast.fire({
+          icon: 'success',
+          title: 'Post deleted'
+        });
+      }
+    });
+  }
 
   return (
     <div>
@@ -36,8 +74,21 @@ function Home () {
                 >
                   View
                 </Button>
-                <Button size="small" color="info">Edit</Button>
-                <Button size="small" color="danger">Delete</Button>
+                <Button
+                  size="small"
+                  color="info"
+                  renderAs={Link}
+                  href={`/posts/${post.id}/edit`}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="small"
+                  color="danger"
+                  onClick={() => handleDeletion(post.id)}
+                >
+                  Delete
+                </Button>
               </div>
             </div>
           </Box>
