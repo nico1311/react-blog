@@ -3,6 +3,7 @@ import { useLocation, useRoute } from 'wouter';
 import { Heading } from 'react-bulma-components';
 import Swal from 'sweetalert2';
 
+import ErrorBox from '../components/ErrorBox';
 import EditPostForm from '../components/EditPostForm';
 import ApiClient from '../api/ApiClient';
 
@@ -24,14 +25,13 @@ function EditPost () {
   }, []);
 
   const handleSubmission = (values) => {
-    console.log('submit', values);
     setFormLoading(true);
     ApiClient.editPost(post.id, values).then((newPost) => {
       setPost(newPost);
       Swal.fire({
         title: 'Post edited',
         icon: 'success',
-        confirmButtonColor: '#f14668',
+        confirmButtonColor: '#3e8ed0',
         timer: 2000
       }).then(() => {
         setLocation(`/posts/${post.id}`);
@@ -41,7 +41,7 @@ function EditPost () {
         title: 'Something went wrong',
         text: err.message,
         icon: 'error',
-        confirmButtonColor: '#f14668'
+        confirmButtonColor: '#3e8ed0'
       });
     }).finally(() => setFormLoading(false));
   }
@@ -55,7 +55,7 @@ function EditPost () {
   );
 
   if (error) return (
-    <div>Error: {error}</div>
+    <ErrorBox message={error} />
   );
 
   if (post) return (

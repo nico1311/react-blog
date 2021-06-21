@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRoute } from 'wouter';
 import { Heading } from 'react-bulma-components';
 
+import ErrorBox from '../components/ErrorBox';
 import ApiClient from '../api/ApiClient';
 
 function ViewPost () {
@@ -14,7 +15,6 @@ function ViewPost () {
   useEffect(() => {
     setLoading(true);
     ApiClient.getPost(params.id).then((post) => {
-      console.log(post);
       setPost(post);
     })
     .catch((err) => setError(err.message))
@@ -26,7 +26,7 @@ function ViewPost () {
   );
 
   if (error) return (
-    <div>Error: {error}</div>
+    <ErrorBox message={error} />
   );
 
   if (post) return (

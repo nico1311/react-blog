@@ -16,13 +16,12 @@ function NewPost () {
   const [formLoading, setFormLoading] = useState(false);
 
   const handleSubmission = (values) => {
-    console.log('submit', values);
     setFormLoading(true);
     ApiClient.createPost(values).then((newPost) => {
       Swal.fire({
         title: 'Post created',
         icon: 'success',
-        confirmButtonColor: '#f14668',
+        confirmButtonColor: '#3e8ed0',
         timer: 2000
       }).then(() => {
         setLocation(`/posts`);
@@ -32,7 +31,7 @@ function NewPost () {
         title: 'Something went wrong',
         text: err.message,
         icon: 'error',
-        confirmButtonColor: '#f14668'
+        confirmButtonColor: '#3e8ed0'
       });
     }).finally(() => setFormLoading(false));
   }

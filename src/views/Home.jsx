@@ -3,16 +3,18 @@ import { Link } from 'wouter';
 import { Box, Button, Heading } from 'react-bulma-components';
 import Swal from 'sweetalert2';
 
+import ErrorBox from '../components/ErrorBox';
 import ApiClient from '../api/ApiClient';
 
 function Home () {
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     ApiClient.getAllPosts().then((posts) => {
       setPosts(posts);
     }).catch((err) => {
-      console.error(err);
+      setError(err.message);
     });
   }, []);
 
@@ -52,6 +54,10 @@ function Home () {
       }
     });
   }
+
+  if (error) return (
+    <ErrorBox message={error} />
+  );
 
   return (
     <div>
